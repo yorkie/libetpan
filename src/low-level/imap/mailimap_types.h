@@ -2858,7 +2858,9 @@ enum {
                                      in the given range */
   MAILIMAP_SEARCH_KEY_MULTIPLE,   /* the boolean operator between the
                                      conditions is AND */
-  MAILIMAP_SEARCH_KEY_MODSEQ      /* mod sequence */
+  MAILIMAP_SEARCH_KEY_MODSEQ,     /* mod sequence */
+  MAILIMAP_SEARCH_KEY_XGMTHRID,   /* Gmail thread id */
+  MAILIMAP_SEARCH_KEY_XGMRAW      /* Gmail RAW expression */
 };
 
 /*
@@ -2924,7 +2926,13 @@ enum {
   - uid is a set of messages when type is MAILIMAP_SEARCH_KEY_UID
 
   - set is a set of messages when type is MAILIMAP_SEARCH_KEY_SET
-
+ 
+  - xgmthrid is a number of the gmail thread id when type is MAILIMAP_SEARCH_KEY_XGMTHRID
+    use mailimap_search_key_new_xgmthrid() for this key
+ 
+  - xgmraw is a raw gmail search expression when type is MAILIMAP_SEARCH_KEY_XGMRAW
+    use mailimap_search_key_new_xgmraw() for this key
+ 
   - multiple is a set of message when type is MAILIMAP_SEARCH_KEY_MULTIPLE
 */
 
@@ -2965,6 +2973,8 @@ struct mailimap_search_key {
     uint32_t sk_smaller;
     struct mailimap_set * sk_uid;
     struct mailimap_set * sk_set;
+    uint64_t sk_xgmthrid;
+    char * sk_xgmraw;
     clist * sk_multiple; /* list of (struct mailimap_search_key *) */
     struct {
       struct mailimap_flag * sk_entry_name;
@@ -2991,7 +3001,19 @@ mailimap_search_key_new(int sk_type,
     struct mailimap_date * sk_sentsince,
     uint32_t sk_smaller, struct mailimap_set * sk_uid,
     struct mailimap_set * sk_set, clist * sk_multiple);
+  
+/*
+  this function creates a condition structure to match messages with
+  the given gmail thread id
+*/
 
+LIBETPAN_EXPORT
+struct mailimap_search_key *
+mailimap_search_key_new_xgmthrid(uint64_t sk_xgmthrid);
+
+LIBETPAN_EXPORT
+struct mailimap_search_key *
+mailimap_search_key_new_xgmraw(char * sk_xgmraw);
 
 LIBETPAN_EXPORT
 void mailimap_search_key_free(struct mailimap_search_key * key);

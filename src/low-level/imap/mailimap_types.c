@@ -2764,6 +2764,35 @@ mailimap_search_key_new(int sk_type,
   return key;
 }
 
+struct mailimap_search_key *
+mailimap_search_key_new_xgmthrid(uint64_t sk_xgmthrid)
+{
+  struct mailimap_search_key * key;
+  
+  key = malloc(sizeof(* key));
+  if (key == NULL)
+    return NULL;
+  
+  key->sk_type = MAILIMAP_SEARCH_KEY_XGMTHRID;
+  key->sk_data.sk_xgmthrid = sk_xgmthrid;
+
+  return key;
+}
+
+struct mailimap_search_key *
+mailimap_search_key_new_xgmraw(char * sk_xgmraw)
+{
+  struct mailimap_search_key * key;
+  
+  key = malloc(sizeof(* key));
+  if (key == NULL)
+    return NULL;
+  
+  key->sk_type = MAILIMAP_SEARCH_KEY_XGMRAW;
+  key->sk_data.sk_xgmraw = sk_xgmraw;
+  
+  return key;
+}
 
 void mailimap_search_key_free(struct mailimap_search_key * key)
 {
@@ -2835,11 +2864,14 @@ void mailimap_search_key_free(struct mailimap_search_key * key)
         (clist_func) mailimap_search_key_free, NULL);
     clist_free(key->sk_data.sk_multiple);
     break;
-	case MAILIMAP_SEARCH_KEY_MODSEQ:
-	  if (key->sk_data.sk_modseq.sk_entry_name != NULL) {
-			mailimap_flag_free(key->sk_data.sk_modseq.sk_entry_name);
-		}
-	  break;
+  case MAILIMAP_SEARCH_KEY_MODSEQ:
+    if (key->sk_data.sk_modseq.sk_entry_name != NULL) {
+      mailimap_flag_free(key->sk_data.sk_modseq.sk_entry_name);
+    }
+    break;
+  case MAILIMAP_SEARCH_KEY_XGMRAW:
+    mailimap_astring_free(key->sk_data.sk_xgmraw);
+    break;
   }
   
   free(key);
